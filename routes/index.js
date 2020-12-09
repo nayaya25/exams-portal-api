@@ -2,8 +2,12 @@ const express = require("express")
 const { verify, createQuestion } = require("../controllers")
 const router = express.Router()
 
-const {validate, questionCreateRules } = require("../middlewares")
+const {
+    validate,
+    questionCreateValidationRules,
+    nasimsIdValidationRules
+} = require("../middlewares")
 
-router.get('/login', verify)
-router.post('/question', questionCreateRules(), validate, createQuestion)
+router.get('/verify', nasimsIdValidationRules(), validate, verify)
+router.post('/question', questionCreateValidationRules(), validate, createQuestion)
 module.exports = router;
