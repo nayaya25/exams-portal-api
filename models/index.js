@@ -1,6 +1,5 @@
+const Question = require("./question")
 
-
-
-export default {
-    
+module.exports = {
+    Question
 }

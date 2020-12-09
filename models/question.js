@@ -12,16 +12,20 @@ const Question = sequelize.define("Question", {
         allowNull: false
     },
     options: {
-        type: DataTypes.JSONB,
+        type: DataTypes.ARRAY(DataTypes.STRING),
         allowNull: false,
     },
     answer: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
         allowNull: false
+    },
+    time: {
+        type: DataTypes.INTEGER,
+        allowNull: true
     }
 })
 
-Question.sync({ force: true })
+Question.sync({ alter: true })
 
 module.exports = Question
 

@@ -1,6 +1,6 @@
+const {validate, questionCreateRules} = require("./validator")
 
-
-
-export default {
-    
+module.exports = {
+    validate,
+    questionCreateRules
 }
