@@ -1,12 +1,9 @@
-const app = require("./loader")
-require("dotenv").config()
+const { PORT } = require("./helpers/constants");
+const app = require("./loader");
+const router = require("./routes");
 
-app.get('/', (req, res) => {
-    res.send("Hello Duniya") 
-}) 
+app.use(router) 
 
-const port = process.env.PORT || 3000;
-
-app.listen(port, () => {
-    console.log(`Server Started at Port: ${port}`)
+app.listen(PORT, () => {
+    console.log(`Server Started at Port: ${PORT}`)
 })
