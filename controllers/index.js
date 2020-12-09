@@ -1,6 +1,6 @@
 const superagent = require("superagent");
 const { DESK_API_KEY, DESK_API_SECRET, API_URL } = require("../helpers/constants");
-const { Question } = require("../models/question")
+const { Question } = require("../models")
 
 const verify = async (req, res) => {
     const { nasimsId } = req.query;
@@ -23,14 +23,18 @@ const verify = async (req, res) => {
 
 const createQuestion = async (req, res) => {
     const { question, options, answer, time } = req.body;
+    const answerIndex = options.indexOf(answer)
     try {
         const newQuestion = await Question.create({
-            question, options, answer, time
+            question, options, answer: answerIndex, time
         })
         res.status(201).json(newQuestion)
     } catch (e) {
         console.log(e)
-        res.status(503).json({'status': 'Database Error', 'errorDetails': e})
+        res.status(503).json({
+            'status': 'Database Error',
+            'errorDetails': e
+        })
     }
 }
 
