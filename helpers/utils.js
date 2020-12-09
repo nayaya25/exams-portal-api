@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import { JWT_SECRET } from './constants';
 
 const validateToken = (req, res, next) => {
     const authorizationHeaader = req.headers.authorization;
@@ -11,7 +12,7 @@ const validateToken = (req, res, next) => {
       };
       try {
         // verify makes sure that the token hasn't expired and has been issued by us
-        result = jwt.verify(token, process.env.JWT_SECRET, options);
+        result = jwt.verify(token, JWT_SECRET, options);
 
         // Let's pass back the decoded token to the request object
         req.decoded = result;

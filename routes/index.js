@@ -1,6 +1,9 @@
+const express = require("express")
+const { verify, createQuestion } = require("../controllers")
+const router = express.Router()
 
 
 
-export default {
-    
-}
+router.get('/login', verify)
+router.post('/question', createQuestion)
+module.exports = router;
