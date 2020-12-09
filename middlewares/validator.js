@@ -1,6 +1,6 @@
-const { check, validationResult } =  require('express-validator')
+const { check, validationResult, query } =  require('express-validator')
 
-const questionCreateRules = () => {
+const questionCreateValidationRules = () => {
   return [
     // Question Field Validation
     check('question')
@@ -19,6 +19,15 @@ const questionCreateRules = () => {
   ]
 }
 
+const nasimsIdValidationRules = () => {
+  return [
+    // NASSIMS ID query string validation
+    query('nasimsId')
+      .notEmpty()
+      .withMessage("Please Provide NASIMS ID"),
+  ]
+}
+
 const validate = (req, res, next) => {
   const errors = validationResult(req)
   if (errors.isEmpty()) {
@@ -34,6 +43,7 @@ const validate = (req, res, next) => {
 }
 
 module.exports = {
-  questionCreateRules,
+  nasimsIdValidationRules,
+  questionCreateValidationRules,
   validate
 }
