@@ -1,6 +1,7 @@
 const superagent = require("superagent");
 const { DESK_API_KEY, DESK_API_SECRET, API_URL } = require("../helpers/constants");
 const { Question } = require("../models")
+const { dbErrorFormatter } = require("../helpers/utils")
 
 const verify = async (req, res) => {
     const { nasimsId } = req.query;
@@ -25,30 +26,51 @@ const verify = async (req, res) => {
 }
 
 const createQuestion = async (req, res) => {
-    const { question, options, answer, time } = req.body;
-    const answerIndex = options.indexOf(answer)
-    try {
+    const { questions } = req.body;
+    const errorMessages = []
+    questions.forEach((questionObject, index) => {
+        const answerIndex = questionObject.options.indexOf(questionObject.answer);
         if (answerIndex === -1) {
-            res.status(400).json({
-                'status': 'error',
-                'message': 'Answer not Part of the Options Array'
-            })
+            errorMessages.push({ questionIndex: index, message: 'Answer not Part of the Options Array' })
         } else {
-            newQuestion = await Question.create({
-                question, options, answer: answerIndex, time
-            })
-            res.status(201).json(newQuestion)
-         }
-    } catch (e) {
-        const errData = e.errors
+            questionObject.answer = answerIndex;
+        }
+    })
+
+    try {
+        const areValidAnswers = questions.every(q => q.answer > -1)
+        if (!areValidAnswers) {
+            res.status(406).json({ 'status': 'Invalid Answer Error', 'errorInfo': errorMessages})
+        } else {
+            const newQuestions = await Question.bulkCreate(questions)
+            res.status(201).json(newQuestions)
+        }
+  } catch (e) {
         res.status(503).json({
             'status': 'Database Error',
-            'errorDetails': errData.map(er => er.message)
+            'errorDetails': dbErrorFormatter(e)
         })
     }
 }
 
+// const getQuestions = async (req, res) => {
+//     try {
+//         const questions = await Question.findAll({
+//           attributes: [
+//                 'id',
+//                 'question',
+//                 'options',
+//                 'time'
+//             ]
+//         })
+//         res.status(200).json({status: 'success', data: questions})
+//     } catch (error) {
+//         res.status(503).json({ status: 'error', message: 'Error Fetching Questions'})
+//     }
+// }
+
 module.exports = {
     verify,
-    createQuestion
+    createQuestion,
+    // getQuestions
 }

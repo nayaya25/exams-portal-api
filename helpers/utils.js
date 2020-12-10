@@ -1,5 +1,5 @@
-import jwt from 'jsonwebtoken';
-import { JWT_SECRET } from './constants';
+const jwt = require('jsonwebtoken');
+const { JWT_SECRET } = require('./constants');
 
 const validateToken = (req, res, next) => {
     const authorizationHeaader = req.headers.authorization;
@@ -30,8 +30,11 @@ const validateToken = (req, res, next) => {
       res.status(401).send(result);
     }
 }
+
+const dbErrorFormatter = error =>  error.errors.map(er => er.message)
   
 
 module.exports = {
- validateToken
+  validateToken,
+  dbErrorFormatter
 };
