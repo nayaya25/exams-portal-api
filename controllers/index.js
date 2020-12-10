@@ -30,10 +30,10 @@ const createQuestion = async (req, res) => {
         })
         res.status(201).json(newQuestion)
     } catch (e) {
-        console.log(e)
+        const errData = e.errors
         res.status(503).json({
             'status': 'Database Error',
-            'errorDetails': e
+            'errorDetails': errData.map(er => er.message)
         })
     }
 }
