@@ -28,10 +28,17 @@ const createQuestion = async (req, res) => {
     const { question, options, answer, time } = req.body;
     const answerIndex = options.indexOf(answer)
     try {
-        const newQuestion = await Question.create({
-            question, options, answer: answerIndex, time
-        })
-        res.status(201).json(newQuestion)
+        if (answerIndex === -1) {
+            res.status(400).json({
+                'status': 'error',
+                'message': 'Answer not Part of the Options Array'
+            })
+        } else {
+            newQuestion = await Question.create({
+                question, options, answer: answerIndex, time
+            })
+            res.status(201).json(newQuestion)
+         }
     } catch (e) {
         const errData = e.errors
         res.status(503).json({
