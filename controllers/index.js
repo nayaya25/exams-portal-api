@@ -1,6 +1,9 @@
 const superagent = require("superagent");
 const { DESK_API_KEY, DESK_API_SECRET, API_URL } = require("../helpers/constants");
 const { Question } = require("../models")
+const Sequelize = require('sequelize');
+
+
 
 const verify = async (req, res) => {
     const { nasimsId } = req.query;
@@ -38,7 +41,29 @@ const createQuestion = async (req, res) => {
     }
 }
 
+
+const examQuestions = async(req,res) =>{
+    try{
+       const test = await Question.findAll({order:  Sequelize.literal('random()'), limit: 10 })
+       return res.status(200).json({
+       test:test
+    })
+    }
+    catch(error){
+        console.log(error);
+        return  res.status(422).json({error: error}) 
+    }
+
+}
+
+const examScore = async(req,res) =>{
+
+
+}
+
 module.exports = {
     verify,
-    createQuestion
+    createQuestion,
+    examQuestions,
+    examScore
 }
