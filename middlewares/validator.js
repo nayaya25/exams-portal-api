@@ -3,15 +3,15 @@ const { check, validationResult, query } =  require('express-validator')
 const questionCreateValidationRules = () => {
   return [
     // Question Field Validation
-    check('question')
+    check('questions.*.question')
       .notEmpty()
       .withMessage("Question Cannot be empty"),
     // Answer Field Validation
-    check('answer')
+    check('questions.*.answer')
       .notEmpty()
       .withMessage("Answer Cannot be empty"),
     // options Field Validation
-    check('options')
+    check('questions.*.options')
       .notEmpty()
       .withMessage("Options Cannot be Empty")
       .isArray({ min: 3, max: 5 })
