@@ -1,7 +1,15 @@
 const superagent = require("superagent");
 const { DESK_API_KEY, DESK_API_SECRET, API_URL } = require("../helpers/constants");
 const { Question } = require("../models")
-const Sequelize = require('sequelize');
+const Sequelize = require('sequelize')
+const { Validator } = require('node-input-validator')
+
+//helper method for formatting v.errors messages
+const VerrorsMessageFormatter = (Verrors) => {       //formats verror message
+    let errors = Object.entries(Verrors)
+    errorsFormatted = errors.map(h => h[1].message)
+    return errorsFormatted
+}
 
 
 
@@ -67,6 +75,45 @@ const examQuestions = async(req,res) =>{
 }
 
 const examScore = async(req,res) =>{
+    let score=0;
+    try{
+      const v = new Validator({
+        'exam': 'required|array',
+        'exam.*.questionId' : 'required',
+        'exam.*.answer':'required'
+      });
+      const matched = await v.check()
+      if(!matched){
+        return res.status(422).json({error:  VerrorsMessageFormatter(v.errors)})
+      }
+      
+      else
+      {
+
+          for(obj of req.body.exam){
+            console.log(obj)
+            const question = await Question.findOne({where :{id:obj.questionId}})
+            console.log(question)
+            if(!question) return reject({message: "Question not found"})
+
+            if(question.answer==obj.answer){
+                score = score + 1;
+            }
+
+            console.log(score);
+          }
+          return res.status(200).json(score)  
+      }
+     
+      
+
+    }
+
+    catch(error){
+        console.log(error);
+        return  res.status(422).json({error: error}) 
+
+    }
 
 
 }
