@@ -14,4 +14,8 @@ router.get('/increaseLogin', increaseTestAttempt)
 router.get('/verify', nasimsIdValidationRules(), validate, verify)
 router.post('/question', questionCreateValidationRules(), validate, createQuestion)
 
+router.all('/*', (req, res) => {
+    res.status(404).json("You are probably Lost..... Check you route!")
+})
+
 module.exports = router;
