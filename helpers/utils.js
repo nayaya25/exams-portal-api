@@ -1,5 +1,4 @@
 const jwt = require('jsonwebtoken');
-const { options } = require('../models/question');
 const { JWT_SECRET } = require('./constants');
 
 const validateToken = (req, res, next) => {
