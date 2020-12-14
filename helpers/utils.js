@@ -1,5 +1,4 @@
 const jwt = require('jsonwebtoken');
-const { Model } = require('sequelize/types');
 const { options } = require('../models/question');
 const { JWT_SECRET } = require('./constants');
 
