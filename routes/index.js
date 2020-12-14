@@ -1,6 +1,12 @@
 const express = require("express")
-const { verify, createQuestion, getQuestions, increaseTestAttempt } = require("../controllers")
 const router = express.Router()
+
+const {
+    verify,
+    createQuestion,
+    // getQuestions,
+    increaseTestAttempt
+} = require("../controllers")
 
 const {
     validate,
