@@ -2,7 +2,7 @@ const superagent = require("superagent");
 const { DESK_API_KEY, DESK_API_SECRET, API_URL } = require("../helpers/constants");
 const { Question, Applicant } = require("../models")
 const { dbErrorFormatter } = require("../helpers/utils");
-const { sequelize } = require("../helpers/db.config");
+// const { sequelize } = require("../helpers/db.config");
 
 const verify = async (req, res) => {
     const { nasimsId } = req.query;
