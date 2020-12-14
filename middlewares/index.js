@@ -1,6 +1,7 @@
+const {validate, questionCreateValidationRules, nasimsIdValidationRules} = require("./validator")
 
-
-
-export default {
-    
+module.exports = {
+    validate,
+    questionCreateValidationRules,
+    nasimsIdValidationRules
 }

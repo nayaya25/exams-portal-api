@@ -1,9 +1,21 @@
 const express = require("express")
-const { verify, createQuestion } = require("../controllers")
+const { verify, createQuestion, getQuestions, increaseTestAttempt } = require("../controllers")
 const router = express.Router()
 
+const {
+    validate,
+    questionCreateValidationRules,
+    nasimsIdValidationRules
+} = require("../middlewares")
 
+// router.get('/questions', getQuestions)
 
-router.get('/login', verify)
-router.post('/question', createQuestion)
+router.get('/increaseLogin', increaseTestAttempt)
+router.get('/verify', nasimsIdValidationRules(), validate, verify)
+router.post('/question', questionCreateValidationRules(), validate, createQuestion)
+
+router.all('/*', (req, res) => {
+    res.status(404).json("You are probably Lost..... Check you route!")
+})
+
 module.exports = router;

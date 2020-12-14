@@ -7,9 +7,6 @@ const cors = require("cors")
 const helmet = require("helmet")
 const compression = require("compression")
 
-
-
-
 // MiddleWares Set Up
 app.use(bodyParser.json())
 app.use(morgan('dev'))

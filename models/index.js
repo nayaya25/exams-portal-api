@@ -1,6 +1,7 @@
+const Question = require("./question")
+const Applicant = require("./applicant")
 
-
-
-export default {
-    
+module.exports = {
+    Question,
+    Applicant
 }
