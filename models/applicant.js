@@ -33,9 +33,9 @@ const Applicant = sequelize.define("Applicant", {
     }
 })
 
-Applicant.sync({ alter: true })
+Applicant.sync({ alter: true });
 
-module.exports = Applicant
+module.exports = Applicant;
 
 
 

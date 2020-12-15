@@ -27,10 +27,36 @@ const validateToken = (req, res, next) => {
     }
 }
 
-const dbErrorFormatter = error =>  error.errors.map(er => er.message)
+const dbErrorFormatter = error => error.errors.map(er => er.message);
   
+const crudHelper = () => {
+  return {
+    getAll: async (Model, options = {}) => {
+      return await Model.findAll(options);
+    },
+    getOne: async (Model, id) => {
+      return await Model.findOne({ where: { id: id } });
+    },
+    create: async (Model, data) => {
+      return await Model.create(data);
+    },
+    createMultiple: async (Model, dataArray) => {
+      return await Model.bulkCreate(dataArray);
+    },
+    update: async (Model, data, id) => {
+      return await Model.update(data, { where: { id: id } });
+    },
+    updateMultiple: async (Model, data) => {
+      return await Model.update(data);
+    },
+    deleteRecord: async (Model, id) => {
+      return await Model.destroy({ where: { id: id } });
+    }
+  }
+}
 
 module.exports = {
   validateToken,
-  dbErrorFormatter
+  dbErrorFormatter,
+  crudHelper
 };
