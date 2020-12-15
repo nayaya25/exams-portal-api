@@ -4,7 +4,7 @@ const router = express.Router();
 const {
     verify,
     createQuestion,
-    // getQuestions,
+    getQuestions,
     increaseTestAttempt
 } = require("../controllers");
 
@@ -14,7 +14,7 @@ const {
     nasimsIdValidationRules
 } = require("../middlewares");
 
-// router.get('/questions', getQuestions);
+router.get('/questions', getQuestions);
 
 router.get('/increaseLogin', increaseTestAttempt);
 router.get('/verify', nasimsIdValidationRules(), validate, verify);

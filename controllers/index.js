@@ -71,27 +71,27 @@ const increaseTestAttempt = async (req, res) => {
   
 }
 
-// const getQuestions = async (req, res) => {
-//     try {
-//         const questions = await Question.findAll({
-//           attributes: [
-//                 'id',
-//                 'question',
-//                 'options',
-//                 'time'
-//             ],
-//             limit: 5,
-//             order: sequelize.random()
-//         })
-//         res.status(200).json({status: 'success', data: questions})
-//     } catch (error) {
-//         res.status(503).json({ status: 'error', message: 'Error Fetching Questions'})
-//     }
-// }
+const getQuestions = async (req, res) => {
+    try {
+        const questions = await Question.findAll({
+          attributes: [
+                'id',
+                'question',
+                'options',
+                'time'
+            ],
+            limit: 5,
+            order: sequelize.random()
+        })
+        res.status(200).json({status: 'success', data: questions})
+    } catch (error) {
+        res.status(503).json({ status: 'error', message: 'Error Fetching Questions'})
+    }
+}
 
 module.exports = {
     verify,
     createQuestion,
     increaseTestAttempt,
-    // getQuestions
+    getQuestions
 }
