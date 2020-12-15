@@ -14,10 +14,8 @@ if (process.env.NODE_ENV === "production") {
     {
       dialect: "postgres",
       logging: false,
-      dialectOptions: {
-        ssl: true,
-        rejectUnauthorized: false
-      }
+      native: true,
+      rejectUnauthorized: false
     }
   );
 } else {
