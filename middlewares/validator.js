@@ -1,4 +1,4 @@
-const { check, validationResult, query } =  require('express-validator')
+const { check, validationResult, query } = require('express-validator');
 
 const questionCreateValidationRules = () => {
   return [
@@ -16,7 +16,7 @@ const questionCreateValidationRules = () => {
       .withMessage("Options Cannot be Empty")
       .isArray({ min: 3, max: 5 })
       .withMessage("Options Must Be Array of not less than 3 or Greater than 5 values")
-  ]
+  ];
 }
 
 const nasimsIdValidationRules = () => {
@@ -25,21 +25,21 @@ const nasimsIdValidationRules = () => {
     query('nasimsId')
       .notEmpty()
       .withMessage("Please Provide NASIMS ID"),
-  ]
+  ];
 }
 
 const validate = (req, res, next) => {
-  const errors = validationResult(req)
+  const errors = validationResult(req);
   if (errors.isEmpty()) {
-    return next()
+    return next();
   }
-  const extractedErrors = []
-  errors.array().map(err => extractedErrors.push({ [err.param]: err.msg }))
+  const extractedErrors = [];
+  errors.array().map(err => extractedErrors.push({ [err.param]: err.msg }));
 
   return res.status(422).json({
     status: 'Validation Error',
     errors: extractedErrors,
-  })
+  });
 }
 
 module.exports = {

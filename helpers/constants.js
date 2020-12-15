@@ -1,4 +1,4 @@
-require("dotenv").config()
+require("dotenv").config();
 
 const DESK_API_KEY = process.env.DESK_API_KEY;
 const DESK_API_SECRET = process.env.DESK_API_SECRET;

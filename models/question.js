@@ -26,9 +26,9 @@ const Question = sequelize.define("Question", {
     }
 })
 
-Question.sync({ alter: true })
+Question.sync({ alter: true });
 
-module.exports = Question
+module.exports = Question;
 
 
 
