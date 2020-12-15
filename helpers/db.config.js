@@ -17,7 +17,7 @@ if (process.env.NODE_ENV === "production") {
       dialectOptions: {
         ssl: true,
         rejectUnauthorized: false
-    }
+      }
     }
   );
 } else {
