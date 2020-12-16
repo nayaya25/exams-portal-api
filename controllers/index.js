@@ -122,7 +122,7 @@ const gradeApplicant = async (req, res) => {
       where: { nasimsId: nasimsId },
     });
 
-    const [candidateScore, unavailableQuestions] = await applicantGrader(attempts, Question);
+    const [candidateScore, totalQuestions, unavailableQuestions] = await applicantGrader(attempts, Question);
    
     if (unavailableQuestions.length == 0) {
 
@@ -134,6 +134,7 @@ const gradeApplicant = async (req, res) => {
       res.status(200).json({
         status: "success",
         message: "Applicant Graded Successfully",
+        totalQuestions,
         applicantScore: candidateScore,
       });
     } else {

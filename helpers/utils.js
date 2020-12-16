@@ -57,6 +57,7 @@ const crudHelper = () => {
 const applicantGrader = async (attempts, QuestionModel) => {
   let candidateScore = 0;
   let unfoundQuestions = [];
+  const totalQuestions = attempts.length;
   
   for (const attempt of attempts) {
     const question = await QuestionModel.findOne({
@@ -74,7 +75,7 @@ const applicantGrader = async (attempts, QuestionModel) => {
       candidateScore += 1;
   }
 
-  return [candidateScore, unfoundQuestions]
+  return [candidateScore, totalQuestions, unfoundQuestions]
 };
 
 module.exports = {
