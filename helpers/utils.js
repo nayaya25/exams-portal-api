@@ -57,7 +57,7 @@ const crudHelper = () => {
 const applicantGrader = async (attempts, QuestionModel) => {
   let candidateScore = 0;
   let unfoundQuestions = [];
-
+  
   for (const attempt of attempts) {
     const question = await QuestionModel.findOne({
       where: { id: attempt.id },

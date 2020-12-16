@@ -116,17 +116,14 @@ const getQuestions = async (req, res) => {
 const gradeApplicant = async (req, res) => {
   const { nasimsId } = req.query;
   const { attempts } = req.body;
-  let candidateScore = 0;
-  let unavailableQuestions = [];
 
   try {
-
     const applicant = await Applicant.findOne({
       where: { nasimsId: nasimsId },
     });
 
-    const [candidateScore, unavailableQuestions] = applicantGrader(attempts, Question);
-
+    const [candidateScore, unavailableQuestions] = await applicantGrader(attempts, Question);
+   
     if (unavailableQuestions.length == 0) {
 
       applicant.score = +candidateScore;
@@ -148,7 +145,7 @@ const gradeApplicant = async (req, res) => {
       });
     }
   } catch (error) {
-    
+
     res.status(500).json({
       status: "error",
       message: "Grading Failed",
