@@ -116,19 +116,22 @@ const getQuestions = async (req, res) => {
 const gradeApplicant = async (req, res) => {
   const { nasimsId } = req.query;
   const { attempts } = req.body;
-
+  
   try {
     const applicant = await Applicant.findOne({
       where: { nasimsId: nasimsId },
     });
 
-    const [candidateScore, totalQuestions, unavailableQuestions] = await applicantGrader(attempts, Question);
-   
-    if (unavailableQuestions.length == 0) {
-
+    const [
+      candidateScore,
+      totalQuestions,
+      percentage,
+      unavailableQuestions,
+    ] = await applicantGrader(attempts, Question);
+    
+    if (!unavailableQuestions) {
       applicant.score = +candidateScore;
       applicant.questions = JSON.stringify(attempts);
-      applicant.scoreScale = "exact";
       applicant.save();
 
       res.status(200).json({
@@ -136,17 +139,16 @@ const gradeApplicant = async (req, res) => {
         message: "Applicant Graded Successfully",
         totalQuestions,
         applicantScore: candidateScore,
+        percentageScore: percentage
       });
     } else {
-
       res.status(404).json({
         status: "error",
-        message: "Some Questions Do Not Exist in our records",
+        message: "Some questions do not exist in our records. Try Again!",
         applicantScore: unavailableQuestions,
       });
     }
   } catch (error) {
-
     res.status(500).json({
       status: "error",
       message: "Grading Failed",

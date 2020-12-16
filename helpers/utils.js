@@ -57,8 +57,9 @@ const crudHelper = () => {
 const applicantGrader = async (attempts, QuestionModel) => {
   let candidateScore = 0;
   let unfoundQuestions = [];
+  const percentage = 0.00;
   const totalQuestions = attempts.length;
-  
+ 
   for (const attempt of attempts) {
     const question = await QuestionModel.findOne({
       where: { id: attempt.id },
@@ -74,8 +75,8 @@ const applicantGrader = async (attempts, QuestionModel) => {
     if (question.options[question.answer] === attempt.answer)
       candidateScore += 1;
   }
-
-  return [candidateScore, totalQuestions, unfoundQuestions]
+  percentage = ((candidateScore / totalQuestions) * 100).toFixed(2)
+  return [candidateScore, totalQuestions, percentage, unfoundQuestions]
 };
 
 module.exports = {
