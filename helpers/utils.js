@@ -75,7 +75,7 @@ const applicantGrader = async (attempts, QuestionModel) => {
     if (question.options[question.answer] === attempt.answer)
       candidateScore += 1;
   }
-  percentage = ((candidateScore / totalQuestions) * 100).toFixed(2)
+  percentage = ((candidateScore / totalQuestions) * 100).toFixed(1)
   return [candidateScore, totalQuestions, percentage, unfoundQuestions]
 };
 
