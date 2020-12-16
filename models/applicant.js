@@ -5,7 +5,8 @@ const Applicant = sequelize.define("Applicant", {
         type: DataTypes.UUID,
         allowNull: false,
         defaultValue: DataTypes.UUIDV4,
-        primaryKey: true
+        primaryKey: true,
+        unique: true
     },
     nasimsId: {
         type: DataTypes.STRING,
@@ -27,9 +28,9 @@ const Applicant = sequelize.define("Applicant", {
         defaultValue: 0
     },
     scoreScale: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         allowNull: true,
-        defaultValue: 0
+        defaultValue: 'exact'
     }
 })
 
