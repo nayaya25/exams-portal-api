@@ -5,7 +5,7 @@ const {
   API_URL,
 } = require("../helpers/constants");
 const { Question, Applicant } = require("../models");
-const { dbErrorFormatter } = require("../helpers/utils");
+const { dbErrorFormatter, applicantGrader } = require("../helpers/utils");
 const { sequelize } = require("../helpers/db.config");
 const { query } = require("express-validator");
 
@@ -125,33 +125,22 @@ const gradeApplicant = async (req, res) => {
       where: { nasimsId: nasimsId },
     });
 
-    for (const attempt of attempts) {
-      const question = await Question.findOne({
-        where: { id: attempt.id },
-      });
-
-      if (!question)
-        unavailableQuestions.push({
-          status: "unfound",
-          message: "Question not found",
-          data: attempt,
-        });
-
-      if (question.options[question.answer] === attempt.answer)
-        candidateScore += 1;
-    }
+    const [candidateScore, unavailableQuestions] = applicantGrader(attempts, Question);
 
     if (unavailableQuestions.length == 0) {
+
       applicant.score = +candidateScore;
       applicant.questions = JSON.stringify(attempts);
       applicant.scoreScale = "exact";
       applicant.save();
+
       res.status(200).json({
         status: "success",
         message: "Applicant Graded Successfully",
         applicantScore: candidateScore,
       });
     } else {
+
       res.status(404).json({
         status: "error",
         message: "Some Questions Do Not Exist in our records",
@@ -159,6 +148,7 @@ const gradeApplicant = async (req, res) => {
       });
     }
   } catch (error) {
+    
     res.status(500).json({
       status: "error",
       message: "Grading Failed",
