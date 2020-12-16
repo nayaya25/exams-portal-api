@@ -57,26 +57,27 @@ const crudHelper = () => {
 const applicantGrader = async (attempts, QuestionModel) => {
   let candidateScore = 0;
   let unfoundQuestions = [];
-  let percentage = 0.00;
+  let percentage = 0.0;
   const totalQuestions = attempts.length;
- 
+
   for (const attempt of attempts) {
     const question = await QuestionModel.findOne({
       where: { id: attempt.id },
     });
 
-    if (!question)
+    if (!question) {
       unfoundQuestions.push({
         status: "unfound",
         message: "Question not found",
         data: attempt,
       });
-
-    if (question.options[question.answer] === attempt.answer)
-      candidateScore += 1;
+    } else {
+      if (question.options[question.answer] === attempt.answer)
+        candidateScore += 1;
+    }
   }
-  percentage = ((candidateScore / totalQuestions) * 100).toFixed(1)
-  return [candidateScore, totalQuestions, percentage, unfoundQuestions]
+  percentage = ((candidateScore / totalQuestions) * 100).toFixed(1);
+  return [candidateScore, totalQuestions, percentage, unfoundQuestions];
 };
 
 module.exports = {
