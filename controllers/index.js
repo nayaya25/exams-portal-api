@@ -129,7 +129,7 @@ const gradeApplicant = async (req, res) => {
       unavailableQuestions,
     ] = await applicantGrader(attempts, Question);
     
-    if (!unavailableQuestions) {
+    if (unavailableQuestions.length === 0) {
       applicant.score = +candidateScore;
       applicant.questions = JSON.stringify(attempts);
       applicant.save();

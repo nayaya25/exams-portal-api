@@ -57,7 +57,7 @@ const crudHelper = () => {
 const applicantGrader = async (attempts, QuestionModel) => {
   let candidateScore = 0;
   let unfoundQuestions = [];
-  const percentage = 0.00;
+  let percentage = 0.00;
   const totalQuestions = attempts.length;
  
   for (const attempt of attempts) {
