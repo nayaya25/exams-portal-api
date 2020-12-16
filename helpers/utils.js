@@ -55,8 +55,31 @@ const crudHelper = () => {
   }
 }
 
+const findQuestion = async (attempt, QuestionModel) => {
+  let score = 0;
+  for (const attempt of attempts) {
+    const question = await QuestionModel.findOne({
+      where: { id: attempt.questionId },
+    });
+   
+    console.log(question);
+    // if (!question)
+    //   return reject({
+    //     status: "error",
+    //     message: "Question not found",
+    //     data: attempt,
+    //   });
+
+    if (question.answer === question.options.indexOf(attempt.answer))
+      score += 1;
+  }
+
+  return score;
+}
+
 module.exports = {
   validateToken,
   dbErrorFormatter,
-  crudHelper
+  crudHelper,
+  findQuestion
 };
