@@ -6,8 +6,7 @@ const {
 } = require("../helpers/constants");
 const { Question, Applicant } = require("../models");
 const { dbErrorFormatter, applicantGrader } = require("../helpers/utils");
-const { sequelize } = require("../helpers/db.config");
-const { query } = require("express-validator");
+const { random } = require("../helpers/db.config");
 
 const verify = async (req, res) => {
   const { nasimsId } = req.query;
@@ -48,7 +47,7 @@ const verify = async (req, res) => {
   }
 };
 
-const createQuestion = async (req, res) => {
+const createQuestions = async (req, res) => {
   const { questions } = req.body;
   const errorMessages = [];
   questions.forEach((questionObject, index) => {
@@ -103,7 +102,7 @@ const getQuestions = async (req, res) => {
     const questions = await Question.findAll({
       attributes: ["id", "question", "options", "time"],
       limit: 5,
-      order: sequelize.random(),
+      order: random,
     });
     res.status(200).json({ status: "success", data: questions });
   } catch (error) {
@@ -116,7 +115,7 @@ const getQuestions = async (req, res) => {
 const gradeApplicant = async (req, res) => {
   const { nasimsId } = req.query;
   const { attempts } = req.body;
-  
+
   try {
     const applicant = await Applicant.findOne({
       where: { nasimsId: nasimsId },
@@ -128,7 +127,7 @@ const gradeApplicant = async (req, res) => {
       percentage,
       unavailableQuestions,
     ] = await applicantGrader(attempts, Question);
-    
+
     if (unavailableQuestions.length === 0) {
       applicant.score = +candidateScore;
       applicant.questions = JSON.stringify(attempts);
@@ -139,7 +138,7 @@ const gradeApplicant = async (req, res) => {
         message: "Applicant Graded Successfully",
         totalQuestions,
         applicantScore: candidateScore,
-        percentageScore: percentage
+        percentageScore: percentage,
       });
     } else {
       res.status(404).json({
@@ -149,7 +148,7 @@ const gradeApplicant = async (req, res) => {
       });
     }
   } catch (error) {
-    console.log(error)
+    console.log(error);
     res.status(500).json({
       status: "error",
       message: "Grading Failed",
@@ -160,7 +159,7 @@ const gradeApplicant = async (req, res) => {
 
 module.exports = {
   verify,
-  createQuestion,
+  createQuestions,
   increaseTestAttempt,
   getQuestions,
   gradeApplicant,

@@ -40,8 +40,12 @@ sequelize
     console.error("Unable to connect to the database:", err.original);
   });
 
+
+const random = sequelize.random();
+
 module.exports = {
   sequelize,
   Model,
   DataTypes,
+  random
 };
