@@ -4,7 +4,8 @@ const {
   DESK_API_SECRET,
   API_URL,
 } = require("../helpers/constants");
-const { Question, Applicant } = require("../models");
+
+const { Question, Applicant, Subject } = require("../models");
 const { dbErrorFormatter, applicantGrader } = require("../helpers/utils");
 const { sequelize } = require("../helpers/db.config");
 const { query } = require("express-validator");
@@ -49,31 +50,44 @@ const verify = async (req, res) => {
 };
 
 const createQuestion = async (req, res) => {
-  const { questions } = req.body;
+  const { questionList } = req.body;
   const errorMessages = [];
-  questions.forEach((questionObject, index) => {
-    const answerIndex = questionObject.options.indexOf(questionObject.answer);
-    answerIndex === -1
-      ? errorMessages.push({
-          questionIndex: index,
-          message: "Answer not Part of the Options Array",
-        })
-      : (questionObject.answer = answerIndex);
+  questionList.forEach((questionData) => {
+    const { questions, subjectId } = questionData;
+    questions.forEach((question, index) => {
+      const answerIndex = question.options.indexOf(question.answer);
+      answerIndex === -1
+        ? errorMessages.push({
+            questionIndex: index,
+            message: "Answer not Part of the Options Array",
+          })
+        : (question.answer = answerIndex),
+        (question.subjectId = subjectId);
+    });
   });
 
   try {
-    const areValidAnswers = questions.every((question) => question.answer > -1);
-    let newQuestions;
-    areValidAnswers
-      ? ((newQuestions = await Question.bulkCreate(questions)),
-        res.status(201).json(newQuestions))
-      : res
-          .status(406)
-          .json({ status: "Invalid Answer Error", errorInfo: errorMessages });
+    const areValidAnswers = questionList.every((questionObj) =>
+      questionObj.questions.every((question) => question.answer > -1)
+    );
+
+    if (areValidAnswers) {
+      let resultArray = [];
+      for (const questionData of questionList) {
+        const { questions } = questionData;
+        const newQuestions = await Question.bulkCreate(questions);
+        resultArray.push(newQuestions);
+      }
+      res.status(201).json(resultArray);
+    } else {
+      res
+        .status(406)
+        .json({ status: "Invalid Answer Error", errorInfo: errorMessages });
+    }
   } catch (e) {
     res.status(500).json({
       status: "Database Error",
-      errorDetails: dbErrorFormatter(e),
+      errorDetails: e, //dbErrorFormatter(e),
     });
   }
 };
@@ -158,10 +172,24 @@ const gradeApplicant = async (req, res) => {
   }
 };
 
+const createSubject = async (req, res) => {
+  const { subjects } = req.body;
+  try {
+    const results = Subject.bulkCreate(subjects);
+    res.status(201).json({ status: "success", data: results });
+  } catch (e) {
+    res.status(500).json({
+      status: "Database Error",
+      errorDetails: dbErrorFormatter(e),
+    });
+  }
+};
+
 module.exports = {
   verify,
   createQuestion,
   increaseTestAttempt,
   getQuestions,
   gradeApplicant,
+  createSubject,
 };
