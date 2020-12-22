@@ -6,26 +6,25 @@ const {
     createQuestions,
     getQuestions,
     increaseTestAttempt,
-    gradeApplicant
+    gradeApplicant,
+    createSubject
 } = require("../controllers");
 
 const {
-    validate,
-    questionCreateValidationRules,
-    nasimsIdValidationRule,
-    testSubmitValidationRules
+  validate,
+  questionCreateValidationRules,
+  nasimsIdValidationRules,
 } = require("../middlewares");
 
+router.get("/increaseLogin", increaseTestAttempt);
+router.get("/verify", nasimsIdValidationRules(), validate, verify);
+router.get("/questions", getQuestions);
+router.post("/questions", createQuestion);
+router.post("/gradeApplicant", gradeApplicant);
+router.post("/subjects", createSubject);
 
-
-router.get('/increaseLogin', increaseTestAttempt);
-router.get('/verify', nasimsIdValidationRule(), validate, verify);
-router.get('/questions', getQuestions);
-router.post('/questions', questionCreateValidationRules(), validate, createQuestions);
-router.post('/gradeApplicant', testSubmitValidationRules(), validate, gradeApplicant);
-
-router.all('/*', (req, res) => {
-    res.status(404).json("You are probably Lost..... Check your route!");
+router.all("/*", (req, res) => {
+  res.status(404).json("You are probably Lost..... Check your route!");
 });
 
 module.exports = router;
