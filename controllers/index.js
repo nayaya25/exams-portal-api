@@ -7,7 +7,6 @@ const {
 const { Question, Applicant, Subject } = require("../models");
 const { dbErrorFormatter } = require("../helpers/utils");
 const { sequelize } = require("../helpers/db.config");
-const { query } = require("express-validator");
 
 const verify = async (req, res) => {
   const { nasimsId } = req.query;
@@ -86,7 +85,7 @@ const createQuestion = async (req, res) => {
   } catch (e) {
     res.status(500).json({
       status: "Database Error",
-      errorDetails: e, //dbErrorFormatter(e),
+      errorDetails: dbErrorFormatter(e),
     });
   }
 };
