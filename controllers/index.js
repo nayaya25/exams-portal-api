@@ -4,8 +4,9 @@ const {
   DESK_API_SECRET,
   API_URL,
 } = require("../helpers/constants");
+
 const { Question, Applicant, Subject } = require("../models");
-const { dbErrorFormatter } = require("../helpers/utils");
+const { dbErrorFormatter, applicantGrader } = require("../helpers/utils");
 const { sequelize } = require("../helpers/db.config");
 const { query } = require("express-validator");
 
@@ -129,48 +130,40 @@ const getQuestions = async (req, res) => {
 const gradeApplicant = async (req, res) => {
   const { nasimsId } = req.query;
   const { attempts } = req.body;
-  let candidateScore = 0;
-  let unavailableQuestions = [];
-
+  
   try {
     const applicant = await Applicant.findOne({
       where: { nasimsId: nasimsId },
     });
 
-    for (const attempt of attempts) {
-      const question = await Question.findOne({
-        where: { id: attempt.id },
-      });
-
-      if (!question)
-        unavailableQuestions.push({
-          status: "unfound",
-          message: "Question not found",
-          data: attempt,
-        });
-
-      if (question.options[question.answer] === attempt.answer)
-        candidateScore += 1;
-    }
-
-    if (unavailableQuestions.length == 0) {
+    const [
+      candidateScore,
+      totalQuestions,
+      percentage,
+      unavailableQuestions,
+    ] = await applicantGrader(attempts, Question);
+    
+    if (unavailableQuestions.length === 0) {
       applicant.score = +candidateScore;
       applicant.questions = JSON.stringify(attempts);
-      applicant.scoreScale = "exact";
       applicant.save();
+
       res.status(200).json({
         status: "success",
         message: "Applicant Graded Successfully",
+        totalQuestions,
         applicantScore: candidateScore,
+        percentageScore: percentage
       });
     } else {
       res.status(404).json({
         status: "error",
-        message: "Some Questions Do Not Exist in our records",
+        message: "Some questions do not exist in our records. Try Again!",
         applicantScore: unavailableQuestions,
       });
     }
   } catch (error) {
+    console.log(error)
     res.status(500).json({
       status: "error",
       message: "Grading Failed",
