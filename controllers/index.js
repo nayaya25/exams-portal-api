@@ -174,7 +174,7 @@ const gradeApplicant = async (req, res) => {
 const createSubject = async (req, res) => {
   const { subjects } = req.body;
   try {
-    const results = Subject.bulkCreate(subjects);
+    const results = await Subject.bulkCreate(subjects);
     res.status(201).json({ status: "success", data: results });
   } catch (e) {
     res.status(500).json({
