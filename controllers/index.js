@@ -86,7 +86,7 @@ const createQuestions = async (req, res) => {
   } catch (e) {
     res.status(500).json({
       status: "Database Error",
-      errorDetails: dbErrorFormatter(e),
+      errorDetails: e, //dbErrorFormatter(e),
     });
   }
 };
@@ -191,7 +191,7 @@ const getSubjects = async (req, res) => {
   } catch (e) {
     res.status(500).json({
       status: "Database Error",
-      errorDetails: e, //dbErrorFormatter(e),
+      errorDetails: dbErrorFormatter(e),
     });
   }
 };
