@@ -1,34 +1,33 @@
-const jwt = require('jsonwebtoken');
-const { JWT_SECRET } = require('./constants');
+const jwt = require("jsonwebtoken");
+const { JWT_SECRET } = require("./constants");
 
 const validateToken = (req, res, next) => {
-    const authorizationHeaader = req.headers.authorization;
-    let result;
-    if (authorizationHeaader) {
-      const token = req.headers.authorization.split(' ')[1]; // Bearer <token>
-      const options = {
-        expiresIn: '24h',
-        issuer: 'nasims'
-      };
-      try {
-
-        result = jwt.verify(token, JWT_SECRET, options);
-        req.decoded = result;
-        next();
-      } catch (err) {
-        throw new Error(err);
-      }
-    } else {
-        result = { 
-        status: 'error',
-        message: 'Authentication error. Token required.',
-      };
-      res.status(401).send(result);
+  const authorizationHeaader = req.headers.authorization;
+  let result;
+  if (authorizationHeaader) {
+    const token = req.headers.authorization.split(" ")[1]; // Bearer <token>
+    const options = {
+      expiresIn: "24h",
+      issuer: "nasims",
+    };
+    try {
+      result = jwt.verify(token, JWT_SECRET, options);
+      req.decoded = result;
+      next();
+    } catch (err) {
+      throw new Error(err);
     }
-}
+  } else {
+    result = {
+      status: "error",
+      message: "Authentication error. Token required.",
+    };
+    res.status(401).send(result);
+  }
+};
 
-const dbErrorFormatter = error => error.errors.map(er => er.message);
-  
+const dbErrorFormatter = (error) => error.errors.map((er) => er.message);
+
 const crudHelper = () => {
   return {
     getAll: async (Model, options = {}) => {
@@ -51,35 +50,39 @@ const crudHelper = () => {
     },
     deleteRecord: async (Model, id) => {
       return await Model.destroy({ where: { id: id } });
-    }
-  }
-}
+    },
+  };
+};
 
-const findQuestion = async (attempt, QuestionModel) => {
-  let score = 0;
+const applicantGrader = async (attempts, QuestionModel) => {
+  let candidateScore = 0;
+  let unfoundQuestions = [];
+  let percentage = 0.0;
+  const totalQuestions = attempts.length;
+
   for (const attempt of attempts) {
     const question = await QuestionModel.findOne({
-      where: { id: attempt.questionId },
+      where: { id: attempt.id },
     });
-   
-    console.log(question);
-    // if (!question)
-    //   return reject({
-    //     status: "error",
-    //     message: "Question not found",
-    //     data: attempt,
-    //   });
 
-    if (question.answer === question.options.indexOf(attempt.answer))
-      score += 1;
+    if (!question) {
+      unfoundQuestions.push({
+        status: "unfound",
+        message: "Question not found",
+        data: attempt,
+      });
+    } else {
+      if (question.options[question.answer] === attempt.answer)
+        candidateScore += 1;
+    }
   }
-
-  return score;
-}
+  percentage = ((candidateScore / totalQuestions) * 100).toFixed(1);
+  return [candidateScore, totalQuestions, percentage, unfoundQuestions];
+};
 
 module.exports = {
   validateToken,
   dbErrorFormatter,
   crudHelper,
-  findQuestion
+  applicantGrader,
 };
