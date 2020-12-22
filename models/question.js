@@ -20,13 +20,25 @@ const Question = sequelize.define("Question", {
         type: DataTypes.INTEGER,
         allowNull: false
     },
+    category: {
+        type:   DataTypes.ENUM,
+        values: ['graduate', 'non-graduate', 'other'],
+        defaultValue: 'graduate'
+    },
+    // subjectId: {
+    //     type: DataTypes.UUID,
+    //     allowNull: false,
+    //     references: {
+    //       model: "Subjects",
+    //       key: "id"
+    //     },
+    //     onDelete: "CASCADE"
+    //   },
     time: {
         type: DataTypes.INTEGER,
         allowNull: true
     }
 })
-
-Question.sync({ alter: true });
 
 module.exports = Question;
 
