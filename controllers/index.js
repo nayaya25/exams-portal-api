@@ -184,6 +184,18 @@ const createSubject = async (req, res) => {
   }
 };
 
+const getSubjects = async (req, res) => {
+  try {
+    const results = await Subject.findAll({ attributes: ["title"] });
+    res.status(201).json({ status: "success", data: results });
+  } catch (e) {
+    res.status(500).json({
+      status: "Database Error",
+      errorDetails: dbErrorFormatter(e),
+    });
+  }
+};
+
 module.exports = {
   verify,
   createQuestions,
@@ -191,4 +203,5 @@ module.exports = {
   getQuestions,
   gradeApplicant,
   createSubject,
+  getSubjects,
 };
