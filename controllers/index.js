@@ -186,12 +186,37 @@ const createSubject = async (req, res) => {
 
 const getSubjects = async (req, res) => {
   try {
-    const results = await Subject.findAll({ attributes: ["title"] });
+    const results = await Subject.findAll({
+      attributes: ["id", "title"],
+    });
     res.status(201).json({ status: "success", data: results });
   } catch (e) {
     res.status(500).json({
       status: "Database Error",
-      errorDetails: dbErrorFormatter(e),
+      errorDetails: e, //dbErrorFormatter(e),
+    });
+  }
+};
+
+const getSubjectQuestions = async (req, res) => {
+  try {
+    const results = await Subject.findAll({
+      attributes: ["id", "title"],
+      include: [
+        {
+          model: Question,
+          as: "Questions",
+          attributes: ["id", "question", "options", "time"],
+          limit: 2,
+          order: random,
+        },
+      ],
+    });
+    res.status(201).json({ status: "success", data: results });
+  } catch (e) {
+    res.status(500).json({
+      status: "Database Error",
+      errorDetails: e, //dbErrorFormatter(e),
     });
   }
 };
@@ -204,4 +229,5 @@ module.exports = {
   gradeApplicant,
   createSubject,
   getSubjects,
+  getSubjectQuestions,
 };

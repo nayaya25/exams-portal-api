@@ -8,7 +8,8 @@ const {
   increaseTestAttempt,
   gradeApplicant,
   createSubject,
-  getSubjects,
+    getSubjects,
+  getSubjectQuestions
 } = require("../controllers");
 
 const {
@@ -24,7 +25,7 @@ router.post("/questions", createQuestions);
 router.post("/gradeApplicant", gradeApplicant);
 router.post("/subjects", createSubject);
 router.get("/subjects", getSubjects);
-
+router.get("/subject-questions", getSubjectQuestions);
 router.all("/*", (req, res) => {
   res.status(404).json("You are probably Lost..... Check your route!");
 });
