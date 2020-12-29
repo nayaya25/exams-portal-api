@@ -1,15 +1,30 @@
-const express = require("express")
-const { verify, createQuestion,examQuestions,examScore } = require("../controllers")
-const router = express.Router()
+const express = require("express");
+const router = express.Router();
 
 const {
-    validate,
-    questionCreateValidationRules,
-    nasimsIdValidationRules
-} = require("../middlewares")
+    verify,
+    createQuestions,
+    getQuestions,
+    increaseTestAttempt,
+    gradeApplicant,
+    createSubject
+} = require("../controllers");
 
-router.get('/verify', nasimsIdValidationRules(), validate, verify)
-router.post('/question', questionCreateValidationRules(), validate, createQuestion)
-router.get('/exam',examQuestions)
-router.post('/examScore', examScore)
+const {
+  validate,
+  questionCreateValidationRules,
+  nasimsIdValidationRules,
+} = require("../middlewares");
+
+router.get("/increaseLogin", increaseTestAttempt);
+router.get("/verify", nasimsIdValidationRules(), validate, verify);
+router.get("/questions", getQuestions);
+router.post("/questions", createQuestion);
+router.post("/gradeApplicant", gradeApplicant);
+router.post("/subjects", createSubject);
+
+router.all("/*", (req, res) => {
+  res.status(404).json("You are probably Lost..... Check your route!");
+});
+
 module.exports = router;

@@ -1,37 +1,88 @@
-import jwt from 'jsonwebtoken';
-import { JWT_SECRET } from './constants';
+const jwt = require("jsonwebtoken");
+const { JWT_SECRET } = require("./constants");
 
 const validateToken = (req, res, next) => {
-    const authorizationHeaader = req.headers.authorization;
-    let result;
-    if (authorizationHeaader) {
-      const token = req.headers.authorization.split(' ')[1]; // Bearer <token>
-      const options = {
-        expiresIn: '1d',
-        issuer: ''
-      };
-      try {
-        // verify makes sure that the token hasn't expired and has been issued by us
-        result = jwt.verify(token, JWT_SECRET, options);
-
-        // Let's pass back the decoded token to the request object
-        req.decoded = result;
-        // We call next to pass execution to the subsequent middleware
-        next();
-      } catch (err) {
-        // Throw an error just in case anything goes wrong with verification
-        throw new Error(err);
-      }
-    } else {
-        result = { 
-        status: 'error',
-        message: 'Authentication error. Token required.',
-      };
-      res.status(401).send(result);
+  const authorizationHeaader = req.headers.authorization;
+  let result;
+  if (authorizationHeaader) {
+    const token = req.headers.authorization.split(" ")[1]; // Bearer <token>
+    const options = {
+      expiresIn: "24h",
+      issuer: "nasims",
+    };
+    try {
+      result = jwt.verify(token, JWT_SECRET, options);
+      req.decoded = result;
+      next();
+    } catch (err) {
+      throw new Error(err);
     }
-}
-  
+  } else {
+    result = {
+      status: "error",
+      message: "Authentication error. Token required.",
+    };
+    res.status(401).send(result);
+  }
+};
+
+const dbErrorFormatter = (error) => error.errors.map((er) => er.message);
+
+const crudHelper = () => {
+  return {
+    getAll: async (Model, options = {}) => {
+      return await Model.findAll(options);
+    },
+    getOne: async (Model, id) => {
+      return await Model.findOne({ where: { id: id } });
+    },
+    create: async (Model, data) => {
+      return await Model.create(data);
+    },
+    createMultiple: async (Model, dataArray) => {
+      return await Model.bulkCreate(dataArray);
+    },
+    update: async (Model, data, id) => {
+      return await Model.update(data, { where: { id: id } });
+    },
+    updateMultiple: async (Model, data) => {
+      return await Model.update(data);
+    },
+    deleteRecord: async (Model, id) => {
+      return await Model.destroy({ where: { id: id } });
+    },
+  };
+};
+
+const applicantGrader = async (attempts, QuestionModel) => {
+  let candidateScore = 0;
+  let unfoundQuestions = [];
+  let percentage = 0.0;
+  const totalQuestions = attempts.length;
+
+  for (const attempt of attempts) {
+    const question = await QuestionModel.findOne({
+      where: { id: attempt.id },
+    });
+
+    if (!question) {
+      unfoundQuestions.push({
+        status: "unfound",
+        message: "Question not found",
+        data: attempt,
+      });
+    } else {
+      if (question.options[question.answer] === attempt.answer)
+        candidateScore += 1;
+    }
+  }
+  percentage = ((candidateScore / totalQuestions) * 100).toFixed(1);
+  return [candidateScore, totalQuestions, percentage, unfoundQuestions];
+};
 
 module.exports = {
- validateToken
+  validateToken,
+  dbErrorFormatter,
+  crudHelper,
+  applicantGrader,
 };
