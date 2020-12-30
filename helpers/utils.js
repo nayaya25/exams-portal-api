@@ -80,9 +80,86 @@ const applicantGrader = async (attempts, QuestionModel) => {
   return [candidateScore, totalQuestions, percentage, unfoundQuestions];
 };
 
+const removeDuplicates = (records) => {
+  const uniqueRecords = Array.from(new Set(records.map((a) => a.Question))).map(
+    (question) => {
+      return records.find((a) => a.Question === question);
+    }
+  );
+  return uniqueRecords;
+};
+
+const formatCsvRecords = (records) => {
+  const uniqueRecords = removeDuplicates(records);
+  let newRecords = [];
+  uniqueRecords.map((record) => {
+    const {
+      A,
+      B,
+      C,
+      D,
+      E,
+      Question,
+      Answer,
+      subjectId,
+      category,
+      Instruction,
+    } = record;
+    let options = [A, B, C, D];
+    if (E) options.push(E);
+    let answer = options.indexOf(record[Answer.toUpperCase()]);
+    const formatedQuestion = {
+      subjectId,
+      category,
+      instructions: Instruction ? Instruction : "",
+      question: Question,
+      options,
+      answer,
+    };
+    newRecords.push(formatedQuestion);
+  });
+  return newRecords;
+};
+
+const saveRecords = async (Question, records) => {
+  if (records.length > 0) {
+    try {
+      const results = await Question.bulkCreate(records);
+      return {
+        status: "success",
+        message: "upload completed successfully",
+        data: results,
+        totalRecords: records.length,
+      };
+    } catch (error) {
+      return {
+        status: "error",
+        message: "Database Error",
+        data: error,
+      };
+    }
+  } else {
+    return {
+      status: "error",
+      message: "upload unsuccessful",
+      totalRecords: 0,
+    };
+  }
+};
+
+const checkProperties = (obj) => {
+  console.log(Object.values(obj));
+  return Object.values(obj).every(
+    (value) => value !== null && value !== "" && value !== undefined
+  );
+};
+
 module.exports = {
   validateToken,
   dbErrorFormatter,
   crudHelper,
   applicantGrader,
+  formatCsvRecords,
+  checkProperties,
+  saveRecords,
 };
