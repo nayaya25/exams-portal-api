@@ -1,8 +1,9 @@
-const { validate, questionCreateValidationRules, nasimsIdValidationRule, testSubmitValidationRules } = require("./validator");
+const { validate, questionCreateValidationRules, nasimsIdValidationRule, testSubmitValidationRules, verifyToken } = require("./validator");
 
 module.exports = {
     validate,
     questionCreateValidationRules,
     nasimsIdValidationRule,
-    testSubmitValidationRules
+    testSubmitValidationRules,
+    verifyToken
 }

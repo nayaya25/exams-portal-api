@@ -8,20 +8,36 @@ const {
     increaseTestAttempt,
     gradeApplicant,
     createSubject
-} = require("../controllers");
+} = require("../controllers/index");
+
+const {
+  newAdmin,
+  passwordReset,
+  newPassword,
+  login
+} = require("../controllers/admin");
+
 
 const {
   validate,
   questionCreateValidationRules,
-  nasimsIdValidationRules,
+  nasimsIdValidationRule,
+  verifyToken
+  
 } = require("../middlewares");
 
 router.get("/increaseLogin", increaseTestAttempt);
-router.get("/verify", nasimsIdValidationRules(), validate, verify);
+router.get("/verify", nasimsIdValidationRule(), validate, verify);
 router.get("/questions", getQuestions);
-router.post("/questions", createQuestion);
+router.post("/questions", createQuestions);
 router.post("/gradeApplicant", gradeApplicant);
 router.post("/subjects", createSubject);
+router.post("/admin/newAdmin",verifyToken, newAdmin);
+router.post("/admin/passwordReset", passwordReset);
+router.post("/admin/newPassword", newPassword);
+router.post("/admin/login", login);
+
+
 
 router.all("/*", (req, res) => {
   res.status(404).json("You are probably Lost..... Check your route!");
