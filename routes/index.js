@@ -7,7 +7,11 @@ const {
     getQuestions,
     increaseTestAttempt,
     gradeApplicant,
-    createSubject
+    createSubject,
+    getSubjects,
+    getSubjectQuestions,
+   getSubjectQuestionsByCategory,
+  uploadQuestionCsv,
 } = require("../controllers/index");
 
 const {
@@ -18,6 +22,7 @@ const {
   retakeTest,
   ApplicantScores
 } = require("../controllers/admin");
+
 
 
 const {
@@ -42,6 +47,9 @@ router.post("/admin/retakeTest",verifyToken, retakeTest);
 router.get("/admin/applicantScores",verifyToken, ApplicantScores);
 
 
+router.get("/subjects", getSubjects);
+router.get("/subject-questions", getSubjectQuestions);
+router.post("/csv-questions", uploadQuestionCsv);
 
 router.all("/*", (req, res) => {
   res.status(404).json("You are probably Lost..... Check your route!");

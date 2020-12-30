@@ -13,6 +13,18 @@ const Applicant = sequelize.define("Applicant", {
     allowNull: false,
     unique: true,
   },
+  firstName: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  lastName: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  email: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
   questions: {
     type: DataTypes.ARRAY(DataTypes.JSONB),
     allowNull: true,
