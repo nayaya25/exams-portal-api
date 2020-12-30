@@ -80,9 +80,53 @@ const applicantGrader = async (attempts, QuestionModel) => {
   return [candidateScore, totalQuestions, percentage, unfoundQuestions];
 };
 
+const formatCsvRecords = (records) => {
+  records.forEach((record) => {
+    const { a, b, c, d } = record;
+    record.options = [a, b, c, d];
+    record.answer = record.options.indexOf(record[record.answer.toLowerCase()]);
+    delete record.a;
+    delete record.b;
+    delete record.c;
+    delete record.d;
+  });
+  return records;
+};
+
+const saveRecords = async (Question, records) => {
+  try {
+    if (records.length > 0) {
+      const results = await Question.bulkCreate(records);
+      return {
+        status: "success",
+        message: "upload completed successfully",
+        data: results,
+        totalRecords: records.length,
+      };
+    } else {
+      return {
+        status: "error",
+        message: "upload unsuccessful",
+        totalRecords: 0,
+      };
+    }
+  } catch (error) {
+    return {
+      status: "error",
+      message: "Database Error",
+      info: {
+        message: error.errors[0].message,
+        question: error.errors[0].value,
+      },
+    };
+  }
+};
+
 module.exports = {
   validateToken,
   dbErrorFormatter,
   crudHelper,
   applicantGrader,
+  formatCsvRecords,
+  saveRecords,
 };

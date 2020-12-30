@@ -1,4 +1,9 @@
 const superagent = require("superagent");
+const fs = require("fs");
+// const path = require("path");
+const formidable = require("formidable");
+const csv = require("fast-csv");
+
 const {
   DESK_API_KEY,
   DESK_API_SECRET,
@@ -6,7 +11,12 @@ const {
 } = require("../helpers/constants");
 
 const { Question, Applicant, Subject } = require("../models");
-const { dbErrorFormatter, applicantGrader } = require("../helpers/utils");
+const {
+  dbErrorFormatter,
+  applicantGrader,
+  formatCsvRecords,
+  saveRecords,
+} = require("../helpers/utils");
 const { random } = require("../helpers/db.config");
 
 const verify = async (req, res) => {
@@ -212,13 +222,66 @@ const getSubjectQuestions = async (req, res) => {
         },
       ],
     });
-    res.status(201).json({ status: "success", data: results });
+    res.status(200).json({ status: "success", data: results });
   } catch (e) {
     res.status(500).json({
       status: "Database Error",
       errorDetails: e, //dbErrorFormatter(e),
     });
   }
+};
+
+const uploadQuestionCsv = async (req, res) => {
+  const form = formidable({
+    keepExtensions: true,
+    maxFileSize: 10485760,
+  });
+
+  form.parse(req, (err, fields, files) => {
+    if (err) {
+      return res.status(400).json({
+        status: "error",
+        message: "CSV File could not be uploaded",
+      });
+    }
+
+    const { subjectId } = fields;
+    let records = [];
+    if (files.csvQuestions) {
+      let path = files.csvQuestions.path;
+      fs.createReadStream(path)
+        .pipe(csv.parse({ headers: true }))
+        .on("error", (error) => {
+          res.status(400).json({
+            status: "error",
+            message: "Unable to Read the CSV file",
+            data: error,
+          });
+        })
+        .on("data", (row) => {
+          row.subjectId = subjectId;
+          records.push(row);
+        })
+        .on("end", (rowCount) => {
+          records = formatCsvRecords(records);
+          const resp = saveRecords(Question, records);
+          resp
+            .then((r) => {
+              r.status === "success" ? res.status(200) : res.status(500);
+              return res.json(r);
+            })
+            .catch((e) => {
+              res.status(500).json(e);
+            });
+          console.log(`Parsed ${rowCount} rows`);
+        });
+    } else {
+      res.status(500).json({
+        status: "error",
+        message: "Invalid Field Name for File",
+      });
+    }
+  });
 };
 
 module.exports = {
@@ -230,4 +293,5 @@ module.exports = {
   createSubject,
   getSubjects,
   getSubjectQuestions,
+  uploadQuestionCsv,
 };
