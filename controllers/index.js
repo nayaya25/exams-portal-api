@@ -185,63 +185,7 @@ const createSubject = async (req, res) => {
 };
 
 
-const examQuestions = async(req,res) =>{
-    try{
-       const test = await Question.findAll({order:  Sequelize.literal('random()'), limit: 10 })
-       return res.status(200).json({
-       test:test
-    })
-    }
-    catch(error){
-        console.log(error);
-        return  res.status(422).json({error: error}) 
-    }
 
-}
-
-const examScore = async(req,res) =>{
-    let score=0;
-    try{
-      const v = new Validator({
-        'exam': 'required|array',
-        'exam.*.questionId' : 'required',
-        'exam.*.answer':'required'
-      });
-      const matched = await v.check()
-      if(!matched){
-        return res.status(422).json({error:  VerrorsMessageFormatter(v.errors)})
-      }
-      
-      else
-      {
-
-          for(obj of req.body.exam){
-            console.log(obj)
-            const question = await Question.findOne({where :{id:obj.questionId}})
-            console.log(question)
-            if(!question) return reject({message: "Question not found"})
-
-            if(question.answer==obj.answer){
-                score = score + 1;
-            }
-
-            console.log(score);
-          }
-          return res.status(200).json(score)  
-      }
-     
-      
-
-    }
-
-    catch(error){
-        console.log(error);
-        return  res.status(422).json({error: error}) 
-
-    }
-
-
-}
 
 module.exports = {
   verify,

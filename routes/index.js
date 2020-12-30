@@ -14,7 +14,9 @@ const {
   newAdmin,
   passwordReset,
   newPassword,
-  login
+  login,
+  retakeTest,
+  ApplicantScores
 } = require("../controllers/admin");
 
 
@@ -36,6 +38,8 @@ router.post("/admin/newAdmin",verifyToken, newAdmin);
 router.post("/admin/passwordReset", passwordReset);
 router.post("/admin/newPassword", newPassword);
 router.post("/admin/login", login);
+router.post("/admin/retakeTest",verifyToken, retakeTest);
+router.get("/admin/applicantScores",verifyToken, ApplicantScores);
 
 
 
