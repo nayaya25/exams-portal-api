@@ -24,7 +24,7 @@ const verify = async (req, res) => {
   const { nasimsId } = req.query;
 
   try {
-    const url = `${API_URL}/api/resource/Applicants?fields=["application_id","programme","name","passport_photo","surname","first_name","email_address","date_of_birth","gender","phone_number","birth_certificate"]&filters=[["name","=","${nasimsId}"]]`;
+    const url = `${API_URL}/api/resource/Applicants?fields=["application_id","programme","name","surname","first_name","email_address","date_of_birth","gender","phone_number"]&filters=[["name","=","${nasimsId}"]]`;
     const response = await superagent
       .get(url)
       .set("Content-Type", "application/json")
@@ -32,6 +32,7 @@ const verify = async (req, res) => {
 
     const data = JSON.parse(response.text).data;
     let [applicantInfo] = data;
+    console.log(applicantInfo);
     if (checkProperties(applicantInfo)) {
       let applicantTestData;
       let resObj;
@@ -42,8 +43,14 @@ const verify = async (req, res) => {
         };
         res.status(404);
       } else {
+        const { first_name, surname, email_address } = applicantInfo;
         applicantTestData = await Applicant.findOrCreate({
           where: { nasimsId: nasimsId },
+          defaults: {
+            firstName: first_name,
+            lastName: surname,
+            email: email_address,
+          },
         });
         resObj = {
           status: "success",
@@ -165,14 +172,8 @@ const getQuestions = async (req, res) => {
 
 const gradeApplicant = async (req, res) => {
   const { nasimsId } = req.query;
-  const { attempts, candidatesData } = req.body;
-  const { firstName, lastName, email } = candidatesData;
-
+  const { attempts } = req.body;
   try {
-    const applicant = await Applicant.findOne({
-      where: { nasimsId: nasimsId },
-    });
-
     const [
       candidateScore,
       totalQuestions,
@@ -181,20 +182,31 @@ const gradeApplicant = async (req, res) => {
     ] = await applicantGrader(attempts, Question);
 
     if (unavailableQuestions.length === 0) {
-      applicant.firstName = firstName;
-      applicant.lastName = lastName;
-      applicant.email = email;
-      applicant.score = +candidateScore;
-      applicant.questions = JSON.stringify(attempts);
-      applicant.save();
-
-      res.status(200).json({
-        status: "success",
-        message: "Applicant Graded Successfully",
-        totalQuestions,
-        applicantScore: candidateScore,
-        percentageScore: percentage,
-      });
+      await Applicant.update(
+        {
+          score: parseInt(candidateScore),
+          questions: attempts,
+        },
+        {
+          where: { nasimsId: nasimsId },
+        }
+      )
+        .then((applicant) => {
+          res.status(200).json({
+            status: "success",
+            message: "Applicant Graded Successfully",
+            totalQuestions,
+            applicantScore: applicant.score,
+            percentageScore: percentage,
+          });
+        })
+        .catch((e) => {
+          res.status(500).json({
+            status: "error",
+            message: "Graded, But Failed to Save Score",
+            errorDetails: e,
+          });
+        });
     } else {
       res.status(404).json({
         status: "error",
@@ -203,7 +215,6 @@ const gradeApplicant = async (req, res) => {
       });
     }
   } catch (error) {
-    console.log(error);
     res.status(500).json({
       status: "error",
       message: "Grading Failed",
