@@ -231,7 +231,7 @@ const createSubject = async (req, res) => {
   } catch (e) {
     res.status(500).json({
       status: "Database Error",
-      errorDetails: dbErrorFormatter(e),
+      errorDetails: e,
     });
   }
 };
