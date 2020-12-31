@@ -10,6 +10,7 @@ const {
   createSubject,
   getSubjects,
   getSubjectQuestions,
+  getSubjectQuestionsByCategory,
   uploadQuestionCsv,
 } = require("../controllers");
 

@@ -80,22 +80,50 @@ const applicantGrader = async (attempts, QuestionModel) => {
   return [candidateScore, totalQuestions, percentage, unfoundQuestions];
 };
 
+const removeDuplicates = (records) => {
+  const uniqueRecords = Array.from(new Set(records.map((a) => a.Question))).map(
+    (question) => {
+      return records.find((a) => a.Question === question);
+    }
+  );
+  return uniqueRecords;
+};
+
 const formatCsvRecords = (records) => {
-  records.forEach((record) => {
-    const { a, b, c, d } = record;
-    record.options = [a, b, c, d];
-    record.answer = record.options.indexOf(record[record.answer.toLowerCase()]);
-    delete record.a;
-    delete record.b;
-    delete record.c;
-    delete record.d;
+  const uniqueRecords = removeDuplicates(records);
+  let newRecords = [];
+  uniqueRecords.map((record) => {
+    const {
+      A,
+      B,
+      C,
+      D,
+      E,
+      Question,
+      Answer,
+      subjectId,
+      category,
+      Instruction,
+    } = record;
+    let options = [A, B, C, D];
+    if (E) options.push(E);
+    let answer = options.indexOf(record[Answer.toUpperCase()]);
+    const formatedQuestion = {
+      subjectId,
+      category,
+      instructions: Instruction ? Instruction : "",
+      question: Question,
+      options,
+      answer,
+    };
+    newRecords.push(formatedQuestion);
   });
-  return records;
+  return newRecords;
 };
 
 const saveRecords = async (Question, records) => {
-  try {
-    if (records.length > 0) {
+  if (records.length > 0) {
+    try {
       const results = await Question.bulkCreate(records);
       return {
         status: "success",
@@ -103,23 +131,27 @@ const saveRecords = async (Question, records) => {
         data: results,
         totalRecords: records.length,
       };
-    } else {
+    } catch (error) {
       return {
         status: "error",
-        message: "upload unsuccessful",
-        totalRecords: 0,
+        message: "Database Error",
+        data: error,
       };
     }
-  } catch (error) {
+  } else {
     return {
       status: "error",
-      message: "Database Error",
-      info: {
-        message: error.errors[0].message,
-        question: error.errors[0].value,
-      },
+      message: "upload unsuccessful",
+      totalRecords: 0,
     };
   }
+};
+
+const checkProperties = (obj) => {
+  console.log(Object.values(obj));
+  return Object.values(obj).every(
+    (value) => value !== null && value !== "" && value !== undefined
+  );
 };
 
 module.exports = {
@@ -128,5 +160,6 @@ module.exports = {
   crudHelper,
   applicantGrader,
   formatCsvRecords,
+  checkProperties,
   saveRecords,
 };
