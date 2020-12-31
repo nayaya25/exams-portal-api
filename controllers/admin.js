@@ -92,7 +92,7 @@ const passwordReset = async (req, res) => {
           { where: { email: req.body.email } }
         );
         // const token = jwt.sign({ userId: user.id }, "secret" , { expiresIn: 3600 })
-        const url = process.env.APP_URL + "passwordReset/" + activation_code;
+        const url = process.env.APP_URL + "newPassword/" + activation_code;
         const message = {
           to: req.body.email,
           from: "Nasims@example.com",
@@ -121,7 +121,7 @@ const passwordReset = async (req, res) => {
 
 const newPassword = async (req, res) => {
   const password = req.body.password;
-  const activation_code = req.body.activation_code;
+  const activation_code = req.params.activation_code;
   const email = req.body.email;
 
   try {
