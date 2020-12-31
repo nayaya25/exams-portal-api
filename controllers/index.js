@@ -333,8 +333,6 @@ const uploadQuestionCsv = async (req, res) => {
             .catch((err) => {
               res.json(err);
             });
-          // res.send("ok");
-          // console.log(records);
           console.log(`Parsed ${rowCount} rows`);
         });
     } else {
