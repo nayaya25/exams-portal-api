@@ -43,7 +43,10 @@ const Admin = sequelize.define("Admin", {
         allowNull: false,
         defaultValue: false
     },
-   
+    profileImage :{
+        type : DataTypes.STRING,
+        allowNull:true,
+    }
 
 });
 module.exports = Admin;
