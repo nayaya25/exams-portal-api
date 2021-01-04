@@ -15,7 +15,6 @@ const fs = require("fs");
 const path = require("path")
 const ID = process.env.access_key_id;
 const SECRET = process.env.secret_access_key;
-console.log(ID,SECRET)
 
 const {
   DESK_API_KEY,
