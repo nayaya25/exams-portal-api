@@ -241,7 +241,7 @@ const getSubjects = async (req, res) => {
     const results = await Subject.findAll({
       attributes: ["id", "title"],
     });
-    res.status(201).json({ status: "success", data: results });
+    res.status(200).json({ status: "success", data: results });
   } catch (e) {
     res.status(500).json({
       status: "Database Error",
