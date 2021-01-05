@@ -1,6 +1,5 @@
 const superagent = require("superagent");
 const fs = require("fs");
-// const path = require("path");
 const formidable = require("formidable");
 const csv = require("fast-csv");
 
@@ -322,8 +321,6 @@ const uploadQuestionCsv = async (req, res) => {
             .catch((err) => {
               res.json(err);
             });
-          // res.send("ok");
-          // console.log(records);
           console.log(`Parsed ${rowCount} rows`);
         });
     } else {

@@ -4,15 +4,15 @@ const { SocketLabsClient } = require("@socketlabs/email");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { v4: uuidv4 } = require("uuid");
-const AWS = require('aws-sdk');
-const mime = require('mime-types')
+const AWS = require("aws-sdk");
+const mime = require("mime-types");
 const saltRounds = 10;
 const client = new SocketLabsClient(
   parseInt(process.env.SOCKETLABS_SERVER_ID),
   process.env.SOCKETLABS_INJECTION_API_KEY
 );
 const fs = require("fs");
-const path = require("path")
+const path = require("path");
 const ID = process.env.access_key_id;
 const SECRET = process.env.secret_access_key;
 
@@ -46,13 +46,9 @@ const params = {
 s3.createBucket(params, function (err, data) {
   if (err && err.statusCode == 409) {
     console.log("Bucket has been created already");
-  } 
-  else if(err){
-      console.log(err)
-
-  }
-  
-  else {
+  } else if (err) {
+    console.log(err);
+  } else {
     // console.log(data)
 
     console.log("Bucket Created Successfully", data);
@@ -94,7 +90,7 @@ const passwordReset = async (req, res) => {
       if (user) {
         let activation_code = uuidv4();
         await Admin.update(
-          { activation_code: activation_code },
+          { activationCode: activation_code },
           { where: { email: req.body.email } }
         );
         // const token = jwt.sign({ userId: user.id }, "secret" , { expiresIn: 3600 })
@@ -138,7 +134,7 @@ const newPassword = async (req, res) => {
     if (user) {
       const admin = await Admin.update(
         { password: hash, active: true, activation_code: null },
-        { where: { email: email, activation_code: activation_code } }
+        { where: { email: email, activationCode: activation_code } }
       );
       console.log(admin);
       return res
@@ -215,7 +211,7 @@ const retakeTest = async (req, res) => {
         } else {
           const applicant = await Applicant.update(
             { questions: null, score: null, attempts: null },
-            { where: { email: email, activation_code: activation_code } }
+            { where: { email: email, activationCode: activation_code } }
           );
           console.log(applicant);
           return res
@@ -245,22 +241,21 @@ const newAdmin = async (req, res) => {
       email: "required|email",
       phoneNumber: "required",
     });
-    
+
     const matched = await v.check();
 
     if (!matched) {
       return res.status(422).json({ error: VerrorsMessageFormatter(v.errors) });
     } else {
-        let profileImage= "";
+      let profileImage = "";
       if (req.files) {
         if (req.files.length > 1)
           return res
             .status(422)
             .json({ message: "Please Upload only one Picture" });
-        let file = req.files.profileImage
-        
+        let file = req.files.profileImage;
+
         if (!imageMimeTypes.includes(file.mimetype))
-        
           return res.status(422).json({
             message: "Only PNG, JPG, JPEG, GIF files are allowed",
             mimeGiven: file.mimetype,
@@ -282,14 +277,14 @@ const newAdmin = async (req, res) => {
           ACL: "public-read",
         };
         const result = await saveFileInBucket(params);
-        profileImage = result.Location; 
+        profileImage = result.Location;
       }
-     
+
       const isAdmin = await Admin.findOne({ where: { email: req.body.email } });
       if (isAdmin) {
         return res.status(422).json({ message: "Admin already exists" });
       } else {
-        req.body.profileImage = profileImage
+        req.body.profileImage = profileImage;
         const admin = new Admin(req.body);
         await admin.save();
 

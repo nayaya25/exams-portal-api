@@ -31,7 +31,7 @@ const Admin = sequelize.define("Admin", {
     type: DataTypes.STRING,
     allowNull: true,
   },
-  activation_code: {
+  activationCode: {
     type: DataTypes.STRING,
     default: null,
     allowNull: true,
@@ -47,4 +47,5 @@ const Admin = sequelize.define("Admin", {
     allowNull: true,
   },
 });
+
 module.exports = Admin;
