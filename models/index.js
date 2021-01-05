@@ -9,8 +9,8 @@ Subject.hasMany(Question, {
 });
 Question.belongsTo(Subject, { foreignKey: "subjectId" });
 
-Subject.sync();
-Question.sync();
+Subject.sync({ alter: true });
+Question.sync({ alter: true });
 Applicant.sync({ alter: true });
 
 module.exports = {
