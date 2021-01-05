@@ -10,7 +10,7 @@ const Question = sequelize.define("Question", {
   question: {
     type: DataTypes.TEXT,
     allowNull: false,
-    unique: true,
+    // unique: true,
   },
   instructions: {
     type: DataTypes.TEXT,
