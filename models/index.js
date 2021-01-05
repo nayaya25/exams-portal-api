@@ -7,6 +7,7 @@ Subject.hasMany(Question, {
   foreignKey: "subjectId",
   sourceKey: "id",
 });
+
 Question.belongsTo(Subject, { foreignKey: "subjectId" });
 
 Subject.sync({ alter: true });
