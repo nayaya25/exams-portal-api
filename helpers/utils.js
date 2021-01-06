@@ -148,7 +148,6 @@ const saveRecords = async (Question, records) => {
 };
 
 const checkProperties = (obj) => {
-  console.log(Object.values(obj));
   return Object.values(obj).every(
     (value) => value !== null && value !== "" && value !== undefined
   );

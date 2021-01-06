@@ -14,12 +14,12 @@ app.use(
   fileUpload({
     createParentPath: true,
     limits: {
-      fileSize: 5 * 1024 * 1024 * 1024, //5MB max file(s) size
+      fileSize: 10 * 1024 * 1024 * 1024, //10MB max file(s) size
     },
   })
 );
-app.use(bodyParser.urlencoded({ extended: false, limit: "10mb" }));
 app.use(bodyParser.json({ limit: "10mb" }));
+app.use(bodyParser.urlencoded({ extended: true, limit: "10mb" }));
 app.use(morgan("dev"));
 app.use(compression());
 app.use(helmet());
@@ -32,7 +32,6 @@ app.use(
 );
 
 // Router
-
 app.use(router);
 
 module.exports = app;

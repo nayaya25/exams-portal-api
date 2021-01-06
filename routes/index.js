@@ -22,15 +22,10 @@ const {
   ApplicantScores,
 } = require("../controllers/admin");
 
-const {
-  validate,
-  questionCreateValidationRules,
-  nasimsIdValidationRule,
-  verifyToken,
-} = require("../middlewares");
+const { validate, rulesFor, verifyToken } = require("../middlewares");
 
 router.get("/increaseLogin", increaseTestAttempt);
-router.get("/verify", nasimsIdValidationRule(), validate, verify);
+router.get("/verify", rulesFor("verify"), validate, verify);
 router.get("/questions", getQuestions);
 router.post("/questions", createQuestions);
 router.post("/gradeApplicant", gradeApplicant);

@@ -279,57 +279,49 @@ const getSubjectQuestions = async (req, res) => {
 };
 
 const uploadQuestionCsv = async (req, res) => {
-  const form = formidable({
-    keepExtensions: true,
-    maxFileSize: 10485760,
-  });
-
-  form.parse(req, (err, fields, files) => {
-    if (err) {
-      return res.status(400).json({
-        status: "error",
-        message: "CSV File could not be uploaded",
-      });
-    }
-
-    const { subjectId, questionCategory } = fields;
+  if (req.files.csvQuestions) {
+    const { subjectId, questionCategory } = req.body;
     let records = [];
-    if (files.csvQuestions) {
-      let path = files.csvQuestions.path;
-      fs.createReadStream(path)
-        .pipe(csv.parse({ headers: true }))
-        .on("error", (error) => {
-          res.status(400).json({
-            status: "error",
-            message: "Unable to Read the CSV file",
-            data: error,
-          });
-        })
-        .on("data", (row) => {
-          row.subjectId = subjectId;
-          row.category = questionCategory;
-          records.push(row);
-        })
-        .on("end", (rowCount) => {
-          records = formatCsvRecords(records);
-          const output = saveRecords(Question, records);
-          output
-            .then((result) => {
-              result.status === "success" ? res.status(200) : res.status(500);
-              res.json(result);
-            })
-            .catch((err) => {
-              res.json(err);
-            });
-          console.log(`Parsed ${rowCount} rows`);
+    const { data } = req.files.csvQuestions;
+
+    console.log(req.body);
+    const stream = csv
+      .parse({ headers: true })
+      .on("error", (error) => {
+        console.error(error);
+        res.status(400).json({
+          status: "error",
+          message: "Unable to Read the CSV file",
+          data: error,
         });
-    } else {
-      res.status(500).json({
-        status: "error",
-        message: "Invalid Field Name for File",
+      })
+      .on("data", (row) => {
+        row.subjectId = subjectId;
+        row.category = questionCategory;
+        records.push(row);
+      })
+      .on("end", (rowCount) => {
+        records = formatCsvRecords(records);
+        const output = saveRecords(Question, records);
+        output
+          .then((result) => {
+            result.status === "success" ? res.status(200) : res.status(500);
+            res.json(result);
+          })
+          .catch((err) => {
+            res.json(err);
+          });
+        console.log(`CSV REORDS PARSED SUCCESSFULLY: Parsed ${rowCount} rows`);
       });
-    }
-  });
+
+    stream.write(data);
+    stream.end();
+  } else {
+    res.status(500).json({
+      status: "error",
+      message: "Invalid Field Name for File",
+    });
+  }
 };
 
 module.exports = {

@@ -1,11 +1,9 @@
-const superagent = require("superagent");
 const { Validator } = require("node-input-validator");
 const { SocketLabsClient } = require("@socketlabs/email");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { v4: uuidv4 } = require("uuid");
 const AWS = require("aws-sdk");
-const mime = require("mime-types");
 const saltRounds = 10;
 const client = new SocketLabsClient(
   parseInt(process.env.SOCKETLABS_SERVER_ID),
