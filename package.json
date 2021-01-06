@@ -1,7 +1,8 @@
 {
   "name": "verification-api",
   "version": "1.0.0",
-  "description": "",
+  "description": "NASIMS APPLICANT EXAM/TEST PORTAL API",
+  "repository": "https://github.com/ogtlimited/nasims-examination-portal",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon server.js",
