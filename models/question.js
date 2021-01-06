@@ -9,7 +9,7 @@ const Question = sequelize.define("Question", {
   },
   question: {
     type: DataTypes.TEXT,
-    allowNull: false,
+    allowNull: false
   },
   instructions: {
     type: DataTypes.TEXT,

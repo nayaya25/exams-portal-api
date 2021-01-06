@@ -16,14 +16,17 @@ const Applicant = sequelize.define("Applicant", {
   firstName: {
     type: DataTypes.STRING,
     allowNull: true,
+    defaultValue: "",
   },
   lastName: {
     type: DataTypes.STRING,
     allowNull: true,
+    defaultValue: "",
   },
   email: {
     type: DataTypes.STRING,
     allowNull: true,
+    defaultValue: "",
   },
   questions: {
     type: DataTypes.ARRAY(DataTypes.JSONB),

@@ -59,25 +59,34 @@ const applicantGrader = async (attempts, QuestionModel) => {
   let unfoundQuestions = [];
   let percentage = 0.0;
   const totalQuestions = attempts.length;
-
-  for (const attempt of attempts) {
-    const question = await QuestionModel.findOne({
-      where: { id: attempt.id },
-    });
-
-    if (!question) {
-      unfoundQuestions.push({
-        status: "unfound",
-        message: "Question not found",
-        data: attempt,
+  try {
+    for (const attempt of attempts) {
+      const question = await QuestionModel.findOne({
+        where: { id: attempt.id },
       });
-    } else {
-      if (question.options[question.answer] === attempt.answer)
-        candidateScore += 1;
+
+      if (!question) {
+        unfoundQuestions.push({
+          status: "unfound",
+          message: "Question not found",
+          data: attempt,
+        });
+      } else {
+        if (question.options[question.answer] === attempt.answer)
+          candidateScore += 1;
+      }
     }
+    percentage = ((candidateScore / totalQuestions) * 100).toFixed(1);
+    return [candidateScore, totalQuestions, percentage, unfoundQuestions];
+  } catch (error) {
+    return [
+      candidateScore,
+      totalQuestions,
+      percentage,
+      unfoundQuestions,
+      error,
+    ];
   }
-  percentage = ((candidateScore / totalQuestions) * 100).toFixed(1);
-  return [candidateScore, totalQuestions, percentage, unfoundQuestions];
 };
 
 const removeDuplicates = (records) => {
