@@ -1,6 +1,4 @@
 const superagent = require("superagent");
-const fs = require("fs");
-const formidable = require("formidable");
 const csv = require("fast-csv");
 
 const {
@@ -8,10 +6,8 @@ const {
   DESK_API_SECRET,
   API_URL,
 } = require("../helpers/constants");
-
 const { Question, Applicant, Subject } = require("../models");
 const {
-  dbErrorFormatter,
   applicantGrader,
   formatCsvRecords,
   checkProperties,
@@ -191,12 +187,12 @@ const gradeApplicant = async (req, res) => {
       percentage,
       unavailableQuestions,
     ] = await applicantGrader(attempts, Question);
-
     if (unavailableQuestions.length === 0) {
       await Applicant.update(
         {
           score: parseInt(candidateScore),
           questions: attempts,
+          totalQuestions,
         },
         {
           where: { nasimsId: nasimsId },
@@ -207,8 +203,8 @@ const gradeApplicant = async (req, res) => {
             status: "success",
             message: "Applicant Graded Successfully",
             totalQuestions,
-            applicantScore: applicant.score,
-            percentageScore: percentage,
+            applicantScore: applicant.score || candidateScore,
+            scorePercentage: `${percentage}%`,
           });
         })
         .catch((e) => {
