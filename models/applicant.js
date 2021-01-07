@@ -8,6 +8,11 @@ const Applicant = sequelize.define("Applicant", {
     primaryKey: true,
     unique: true,
   },
+  applicationId: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true,
+  },
   nasimsId: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -28,11 +33,21 @@ const Applicant = sequelize.define("Applicant", {
     allowNull: true,
     defaultValue: "",
   },
+  programme: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    defaultValue: "",
+  },
   questions: {
     type: DataTypes.ARRAY(DataTypes.JSONB),
     allowNull: true,
   },
-  attempts: {
+  totalQuestions: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    defaultValue: 0,
+  },
+  loginAttempts: {
     type: DataTypes.INTEGER,
     allowNull: true,
     defaultValue: 0,

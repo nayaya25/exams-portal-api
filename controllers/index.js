@@ -35,6 +35,14 @@ const verify = async (req, res) => {
     if (checkProperties(applicantInfo)) {
       let applicantTestData;
       let resObj;
+      const {
+        first_name,
+        surname,
+        email_address,
+        programme,
+        application_id,
+      } = applicantInfo;
+
       if (Array.isArray(data) && !data.length) {
         resObj = {
           status: "invalid",
@@ -42,13 +50,14 @@ const verify = async (req, res) => {
         };
         res.status(404);
       } else {
-        const { first_name, surname, email_address } = applicantInfo;
         applicantTestData = await Applicant.findOrCreate({
           where: { nasimsId: nasimsId },
           defaults: {
             firstName: first_name,
             lastName: surname,
             email: email_address,
+            programme: programme,
+            applicationId: application_id,
           },
         });
         resObj = {
@@ -123,8 +132,8 @@ const increaseTestAttempt = async (req, res) => {
     const applicant = await Applicant.findOne({
       where: { nasimsId: nasimsId },
     });
-    applicant.increment("attempts", { where: { nasimsId: nasimsId } });
-    const attempts = applicant.attempts + 1;
+    applicant.increment("loginAttempts", { where: { nasimsId: nasimsId } });
+    const attempts = applicant.loginAttempts + 1;
     res
       .status(200)
       .json({ status: "success", message: "Test Attempt Recorded", attempts });
