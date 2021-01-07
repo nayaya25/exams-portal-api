@@ -114,13 +114,16 @@ const createQuestions = async (req, res) => {
       }
       res.status(201).json(resultArray);
     } else {
-      res
-        .status(406)
-        .json({ status: "Invalid Answer Error", errorInfo: errorMessages });
+      res.status(422).json({
+        status: "error",
+        message: "Invalid/Unavailable Answer",
+        errorInfo: errorMessages,
+      });
     }
   } catch (e) {
     res.status(500).json({
-      status: "Database Error",
+      status: "error",
+      message: "Server Error",
       errorDetails: e, //dbErrorFormatter(e),
     });
   }
@@ -211,7 +214,7 @@ const gradeApplicant = async (req, res) => {
         .catch((e) => {
           res.status(500).json({
             status: "error",
-            message: "Graded, But Failed to Save Score",
+            message: "Server Error: Graded, But Failed to Save Score",
             errorDetails: e,
           });
         });
@@ -238,7 +241,8 @@ const createSubject = async (req, res) => {
     res.status(201).json({ status: "success", data: results });
   } catch (e) {
     res.status(500).json({
-      status: "Database Error",
+      status: "error",
+      message: "Server Error",
       errorDetails: e,
     });
   }
@@ -252,8 +256,9 @@ const getSubjects = async (req, res) => {
     res.status(200).json({ status: "success", data: results });
   } catch (e) {
     res.status(500).json({
-      status: "Database Error",
-      errorDetails: e, //dbErrorFormatter(e),
+      status: "error",
+      message: "Server Error",
+      errorDetails: e,
     });
   }
 };
@@ -292,8 +297,9 @@ const getSubjectQuestions = async (req, res) => {
     res.status(200).json({ status: "success", data: results });
   } catch (e) {
     res.status(500).json({
-      status: "Database Error",
-      errorDetails: e, //dbErrorFormatter(e),
+      status: "error",
+      message: "Server Error",
+      errorDetails: e,
     });
   }
 };
@@ -330,13 +336,13 @@ const uploadQuestionCsv = async (req, res) => {
           .catch((err) => {
             res.json(err);
           });
-        console.log(`CSV REORDS PARSED SUCCESSFULLY: Parsed ${rowCount} rows`);
+        console.log(`CSV REORDS READ SUCCESSFULLY: Parsed ${rowCount} rows`);
       });
 
     stream.write(data);
     stream.end();
   } else {
-    res.status(500).json({
+    res.status(400).json({
       status: "error",
       message: "Invalid Field Name for File",
     });
